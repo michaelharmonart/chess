@@ -58,6 +58,9 @@ public class ChessPiece {
         if (piece.getPieceType() == PieceType.BISHOP) {
             return getDirectionalMoves(board, myPosition, new int[][]{{1, -1}, {1, 1}, {-1, -1}, {-1, 1}});
         }
+        if (piece.getPieceType() == PieceType.KNIGHT) {
+            return getStepMoves(board, myPosition, new int[][]{{1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}});
+        }
         return List.of();
     }
 
@@ -83,6 +86,26 @@ public class ChessPiece {
                 }
                 validMoves.add(new ChessMove(initialPosition, targetPosition, null));
             }
+        }
+        return validMoves;
+    }
+
+    private Collection<ChessMove> getStepMoves(ChessBoard board, ChessPosition initialPosition, int[][] stepOffsets) {
+        List<ChessMove> validMoves = new ArrayList<>();
+        ChessPiece piece = board.getPiece(initialPosition);
+        ChessGame.TeamColor teamColor = piece.getTeamColor();
+        for (int[] stepOffset : stepOffsets) {
+            ChessPosition targetPosition = new ChessPosition(initialPosition.getRow() + stepOffset[0], initialPosition.getColumn() + stepOffset[1]);
+            if (!board.isValidSquare(targetPosition)) {
+                continue;
+            }
+            ChessPiece targetPiece = board.getPiece(targetPosition);
+            if (targetPiece != null) {
+                if (targetPiece.getTeamColor() == teamColor) {
+                    continue;
+                }
+            }
+            validMoves.add(new ChessMove(initialPosition, targetPosition, null));
         }
         return validMoves;
     }
