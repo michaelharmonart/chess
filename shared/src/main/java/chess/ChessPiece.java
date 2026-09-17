@@ -58,9 +58,19 @@ public class ChessPiece {
         if (piece.getPieceType() == PieceType.BISHOP) {
             return getDirectionalMoves(board, myPosition, new int[][]{{1, -1}, {1, 1}, {-1, -1}, {-1, 1}});
         }
+        if (piece.getPieceType() == PieceType.KING) {
+            return getStepMoves(board, myPosition, new int[][]{{1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}});
+        }
         if (piece.getPieceType() == PieceType.KNIGHT) {
             return getStepMoves(board, myPosition, new int[][]{{1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}});
         }
+        if (piece.getPieceType() == PieceType.QUEEN) {
+            return getDirectionalMoves(board, myPosition, new int[][]{{1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}});
+        }
+        if (piece.getPieceType() == PieceType.ROOK) {
+            return getDirectionalMoves(board, myPosition, new int[][]{{1, 0}, {0, 1}, {-1, 0}, {0, -1}});
+        }
+
         return List.of();
     }
 
