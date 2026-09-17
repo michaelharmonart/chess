@@ -8,7 +8,7 @@ package chess;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private final ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {
 
@@ -42,4 +42,11 @@ public class ChessBoard {
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
     }
+
+    public boolean isValidSquare(ChessPosition position) {
+        int row = position.getRow();
+        int col = position.getColumn();
+        return row >= 1 && row <= 8 && col >= 1 && col <= 8;
+    }
 }
+

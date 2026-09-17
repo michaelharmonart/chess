@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,7 +12,12 @@ import java.util.List;
  */
 public class ChessPiece {
 
+    private final ChessGame.TeamColor pieceColor;
+    private final PieceType type;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -30,14 +36,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return type;
     }
 
     /**
@@ -48,6 +54,36 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        ChessPiece piece = board.getPiece(myPosition);
+        if (piece.getPieceType() == PieceType.BISHOP) {
+            return getDirectionalMoves(board, myPosition, new int[][]{{1, -1}, {1, 1}, {-1, -1}, {-1, 1}});
+        }
         return List.of();
+    }
+
+    private Collection<ChessMove> getDirectionalMoves(ChessBoard board, ChessPosition initialPosition, int[][] directions) {
+        List<ChessMove> validMoves = new ArrayList<>();
+        ChessPiece piece = board.getPiece(initialPosition);
+        ChessGame.TeamColor teamColor = piece.getTeamColor();
+        for (int[] direction : directions) {
+            ChessPosition targetPosition = new ChessPosition(initialPosition.getRow(), initialPosition.getColumn());
+            while (true) {
+                targetPosition = new ChessPosition(targetPosition.getRow() + direction[0], targetPosition.getColumn() + direction[1]);
+                if (!board.isValidSquare(targetPosition)) {
+                    break;
+                }
+                ChessPiece targetPiece = board.getPiece(targetPosition);
+                if (targetPiece != null) {
+                    if (targetPiece.getTeamColor() != teamColor) {
+                        validMoves.add(new ChessMove(initialPosition, targetPosition, null));
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+                validMoves.add(new ChessMove(initialPosition, targetPosition, null));
+            }
+        }
+        return validMoves;
     }
 }
