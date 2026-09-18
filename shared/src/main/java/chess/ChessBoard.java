@@ -87,6 +87,9 @@ public class ChessBoard {
         }
     }
 
+    /**
+     * Returns if the given ChessPosition is on the board.
+     */
     public boolean isValidSquare(ChessPosition position) {
         int row = position.getRow();
         int col = position.getColumn();
