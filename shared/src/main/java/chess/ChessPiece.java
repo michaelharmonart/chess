@@ -151,6 +151,9 @@ public class ChessPiece {
                 }
             } else {
                 validMoves.add(new ChessMove(initialPosition, targetPosition, null));
+                /*
+                 * If we're moving forward, check if we're in our initial position and then check the square in front of us as well.
+                 */
                 if (moveOffset[1] == 0) {
                     if (initialPosition.getRow() == initialRow) {
                         targetPosition = new ChessPosition(initialPosition.getRow() + doubleMoveOffset[0], initialPosition.getColumn() + doubleMoveOffset[1]);
