@@ -26,7 +26,11 @@ public class ChessBoard {
 
     public ChessBoard(ChessBoard other) {
         this.size = new BoardSize(other.size);
-        this.squares = other.squares.clone();
+        this.squares = new ChessPiece[other.squares.length][];
+        for (int i = 0; i < other.squares.length; i++) {
+            this.squares[i] = other.squares[i].clone();
+        }
+        other.squares.clone();
     }
 
     @Override
