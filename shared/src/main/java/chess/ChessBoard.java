@@ -10,8 +10,11 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    public record BoardSize(int rows, int columns) {
+    }
 
-    private final ChessPiece[][] squares = new ChessPiece[8][8];
+    private final BoardSize size = new BoardSize(8, 8);
+    private final ChessPiece[][] squares = new ChessPiece[size.rows()][size.columns()];
 
     public ChessBoard() {
 
@@ -94,6 +97,10 @@ public class ChessBoard {
         int row = position.getRow();
         int col = position.getColumn();
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
+    }
+
+    public BoardSize getBoardSize() {
+        return size;
     }
 }
 
