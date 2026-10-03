@@ -153,7 +153,7 @@ public class ChessBoard implements Iterable<ChessPosition> {
 
     @Override
     public String toString() {
-        return Arrays.toString(squares);
+        return Arrays.deepToString(squares);
     }
 }
 
