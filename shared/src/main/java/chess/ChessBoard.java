@@ -65,6 +65,16 @@ public class ChessBoard {
         squares[position.getRow() - 1][position.getColumn() - 1] = null;
     }
 
+    public void movePiece(ChessMove move) {
+        ChessPiece piece = getPiece(move.getStartPosition());
+        removePiece(move.getStartPosition());
+        if (move.getPromotionPiece() != null) {
+            setPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+        } else {
+            setPiece(move.getEndPosition(), piece);
+        }
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *

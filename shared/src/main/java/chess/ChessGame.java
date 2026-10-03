@@ -61,8 +61,7 @@ public class ChessGame {
         ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
         for (ChessMove move : piece.pieceMoves(board, startPosition)) {
             ChessBoard moveBoard = new ChessBoard(board);
-            moveBoard.removePiece(move.getStartPosition());
-            moveBoard.setPiece(move.getEndPosition(), piece);
+            moveBoard.movePiece(move);
             if (!isBoardInCheck(moveBoard, teamColor)) {
                 validMoves.add(move);
             }
@@ -89,13 +88,7 @@ public class ChessGame {
         if (!validMoves(move.getStartPosition()).contains(move)) {
             throw new InvalidMoveException("Invalid move: That move would put the current team in chess.");
         }
-        board.removePiece(move.getStartPosition());
-        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
-        if (promotionPiece == null) {
-            board.setPiece(move.getEndPosition(), piece);
-        } else {
-            board.setPiece(move.getEndPosition(), new ChessPiece(teamColor, promotionPiece));
-        }
+        board.movePiece(move);
         currentTeam = (currentTeam == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
@@ -145,7 +138,30 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        ChessBoard.BoardSize size = board.getBoardSize();
+        for (int row = 1; row < size.rows() + 1; row++) {
+            for (int col = 1; col < size.columns() + 1; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(position);
+                if (piece == null) {
+                    continue;
+                }
+                TeamColor pieceColor = piece.getTeamColor();
+                if (pieceColor == teamColor) {
+                    for (ChessMove move : validMoves(position)) {
+                        ChessBoard moveBoard = new ChessBoard(board);
+                        moveBoard.movePiece(move);
+                        if (!isBoardInCheck(moveBoard, teamColor)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
