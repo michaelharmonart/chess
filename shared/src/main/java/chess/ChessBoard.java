@@ -11,13 +11,22 @@ import java.util.Objects;
  */
 public class ChessBoard {
     public record BoardSize(int rows, int columns) {
+        public BoardSize(BoardSize other) {
+            this(other.rows(), other.columns());
+        }
     }
 
-    private final BoardSize size = new BoardSize(8, 8);
-    private final ChessPiece[][] squares = new ChessPiece[size.rows()][size.columns()];
+    private final BoardSize size;
+    private final ChessPiece[][] squares;
 
     public ChessBoard() {
+        size = new BoardSize(8, 8);
+        squares = new ChessPiece[size.rows()][size.columns()];
+    }
 
+    public ChessBoard(ChessBoard other) {
+        this.size = new BoardSize(other.size);
+        this.squares = other.squares.clone();
     }
 
     @Override
@@ -42,6 +51,14 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow() - 1][position.getColumn() - 1] = piece;
+    }
+
+    public void setPiece(ChessPosition position, ChessPiece piece) {
+        squares[position.getRow() - 1][position.getColumn() - 1] = piece;
+    }
+
+    public void removePiece(ChessPosition position) {
+        squares[position.getRow() - 1][position.getColumn() - 1] = null;
     }
 
     /**
@@ -101,6 +118,11 @@ public class ChessBoard {
 
     public BoardSize getBoardSize() {
         return size;
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(squares);
     }
 }
 

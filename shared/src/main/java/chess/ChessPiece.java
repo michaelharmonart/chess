@@ -215,4 +215,9 @@ public class ChessPiece {
         }
         return validMoves;
     }
+
+    @Override
+    public String toString() {
+        return pieceColor + " " + type;
+    }
 }
