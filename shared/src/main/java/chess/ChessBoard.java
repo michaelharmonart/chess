@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -9,28 +11,47 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
-    public record BoardSize(int rows, int columns) {
-        public BoardSize(BoardSize other) {
-            this(other.rows(), other.columns());
-        }
-    }
+public class ChessBoard implements Iterable<ChessPosition> {
 
-    private final BoardSize size;
     private final ChessPiece[][] squares;
 
     public ChessBoard() {
-        size = new BoardSize(8, 8);
-        squares = new ChessPiece[size.rows()][size.columns()];
+        squares = new ChessPiece[8][8];
     }
 
     public ChessBoard(ChessBoard other) {
-        this.size = new BoardSize(other.size);
         this.squares = new ChessPiece[other.squares.length][];
         for (int i = 0; i < other.squares.length; i++) {
             this.squares[i] = other.squares[i].clone();
         }
         other.squares.clone();
+    }
+
+    @Override
+    public Iterator<ChessPosition> iterator() {
+        return new Iterator<ChessPosition>() {
+            private int row = 0;
+            private int col = 0;
+
+
+            @Override
+            public boolean hasNext() {
+                while (row < squares.length && col >= squares[row].length) {
+                    row++;
+                    col = 0;
+                }
+                return row < squares.length;
+            }
+
+            @Override
+            public ChessPosition next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                return new ChessPosition(row + 1, (col++) + 1);
+            }
+        };
     }
 
     @Override
@@ -128,10 +149,6 @@ public class ChessBoard {
         int row = position.getRow();
         int col = position.getColumn();
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
-    }
-
-    public BoardSize getBoardSize() {
-        return size;
     }
 
     @Override
