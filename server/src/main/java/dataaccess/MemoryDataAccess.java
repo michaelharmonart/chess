@@ -1,15 +1,17 @@
 package dataaccess;
 
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryDataAccess implements DataAccess {
+    private int nextGameID = 1;
     private final Map<String, UserData> users = new HashMap<>();
-
     private final Map<String, AuthData> authTokens = new HashMap<>();
+    private final Map<Integer, GameData> games = new HashMap<>();
 
     public void createUser(UserData user) throws UsernameTakenException {
         if (users.containsKey(user.username())) {
@@ -32,6 +34,19 @@ public class MemoryDataAccess implements DataAccess {
 
     public void deleteAuth(String authToken) {
         authTokens.remove(authToken);
+    }
+
+    public int generateGameID() {
+        var generatedID = nextGameID;
+        nextGameID += 1;
+        return generatedID;
+    }
+
+    public void createGame(GameData game) throws DataAccessException {
+        if (games.containsKey(game.gameID())) {
+            throw new DataAccessException("gameID already in use.");
+        }
+        games.put(game.gameID(), game);
     }
 
     public void clear() {
