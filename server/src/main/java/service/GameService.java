@@ -28,7 +28,8 @@ public class GameService {
     public record ListGamesResponse(GameData[] games) {
     }
 
-    public ListGamesResponse listGames(String authToken) throws BadRequestException, DataAccessException, UnauthorizedException {
+    public ListGamesResponse listGames(String authToken) throws BadRequestException, DataAccessException,
+            UnauthorizedException {
         if (authToken == null) {
             throw new BadRequestException("All fields must be non null");
         }
@@ -45,7 +46,8 @@ public class GameService {
     public record CreateGameResponse(int gameID) {
     }
 
-    public CreateGameResponse createGame(CreateGameRequest createGameRequest, String authToken) throws BadRequestException, DataAccessException, UnauthorizedException {
+    public CreateGameResponse createGame(CreateGameRequest createGameRequest, String authToken) throws
+            BadRequestException, DataAccessException, UnauthorizedException {
         if (createGameRequest.gameName == null | authToken == null) {
             throw new BadRequestException("All fields must be non null");
         }
@@ -61,7 +63,8 @@ public class GameService {
     public record JoinGameRequest(String playerColor, int gameID) {
     }
 
-    public void joinGame(JoinGameRequest joinGameRequest, String authToken) throws BadRequestException, DataAccessException, UnauthorizedException, InvalidGameException, TeamTakenException {
+    public void joinGame(JoinGameRequest joinGameRequest, String authToken) throws BadRequestException,
+            DataAccessException, UnauthorizedException, InvalidGameException, TeamTakenException {
         if (joinGameRequest.playerColor == null | authToken == null) {
             throw new BadRequestException("All fields must be non null");
         }

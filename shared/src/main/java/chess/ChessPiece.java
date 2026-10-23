@@ -85,15 +85,18 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition initialPosition) {
-        return getStepMoves(board, initialPosition, new int[][]{{1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}});
+        return getStepMoves(board, initialPosition,
+                new int[][]{{1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}});
     }
 
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition initialPosition) {
-        return getStepMoves(board, initialPosition, new int[][]{{1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}});
+        return getStepMoves(board, initialPosition,
+                new int[][]{{1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}});
     }
 
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition initialPosition) {
-        return getDirectionalMoves(board, initialPosition, new int[][]{{1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}});
+        return getDirectionalMoves(board, initialPosition,
+                new int[][]{{1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}});
     }
 
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition initialPosition) {
@@ -127,7 +130,8 @@ public class ChessPiece {
         };
 
         for (int[] moveOffset : moveOffsets) {
-            ChessPosition targetPosition = new ChessPosition(initialPosition.getRow() + moveOffset[0], initialPosition.getColumn() + moveOffset[1]);
+            ChessPosition targetPosition = new ChessPosition(initialPosition.getRow() + moveOffset[0],
+                    initialPosition.getColumn() + moveOffset[1]);
             if (!board.isValidSquare(targetPosition)) {
                 continue;
             }
@@ -145,39 +149,51 @@ public class ChessPiece {
                 }
             }
 
-            if (targetPosition.getRow() == promotionRow) {
-                for (PieceType type : new PieceType[]{PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT}) {
-                    validMoves.add(new ChessMove(initialPosition, targetPosition, type));
-                }
-            } else {
-                validMoves.add(new ChessMove(initialPosition, targetPosition, null));
-                /*
-                 * If we're moving forward, check if we're in our initial position and then check the square in front of us as well.
-                 */
-                if (moveOffset[1] == 0) {
-                    if (initialPosition.getRow() == initialRow) {
-                        targetPosition = new ChessPosition(initialPosition.getRow() + doubleMoveOffset[0], initialPosition.getColumn() + doubleMoveOffset[1]);
-                        targetPiece = board.getPiece(targetPosition);
-                        if (targetPiece == null) {
-                            validMoves.add(new ChessMove(initialPosition, targetPosition, null));
-                        }
+            validMoves.addAll(pawnMovesFromOffsets(board, targetPosition, moveOffset, doubleMoveOffset,
+                    initialPosition, initialRow, promotionRow));
+        }
+        return validMoves;
+    }
+
+    private Collection<ChessMove> pawnMovesFromOffsets(ChessBoard board, ChessPosition targetPosition,
+                                                       int[] moveOffset, int[] doubleMoveOffset,
+                                                       ChessPosition initialPosition, int initialRow,
+                                                       int promotionRow) {
+        List<ChessMove> validMoves = new ArrayList<>();
+        if (targetPosition.getRow() == promotionRow) {
+            for (PieceType type : new PieceType[]{PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT}) {
+                validMoves.add(new ChessMove(initialPosition, targetPosition, type));
+            }
+        } else {
+            validMoves.add(new ChessMove(initialPosition, targetPosition, null));
+            /*
+             * If we're moving forward, check if we're in our initial position and then check the square in front of us as well.
+             */
+            if (moveOffset[1] == 0) {
+                if (initialPosition.getRow() == initialRow) {
+                    targetPosition = new ChessPosition(initialPosition.getRow() + doubleMoveOffset[0],
+                            initialPosition.getColumn() + doubleMoveOffset[1]);
+                    ChessPiece targetPiece = board.getPiece(targetPosition);
+                    if (targetPiece == null) {
+                        validMoves.add(new ChessMove(initialPosition, targetPosition, null));
                     }
                 }
-
             }
         }
         return validMoves;
     }
 
 
-    private Collection<ChessMove> getDirectionalMoves(ChessBoard board, ChessPosition initialPosition, int[][] directions) {
+    private Collection<ChessMove> getDirectionalMoves(ChessBoard board, ChessPosition initialPosition,
+                                                      int[][] directions) {
         List<ChessMove> validMoves = new ArrayList<>();
         ChessPiece piece = board.getPiece(initialPosition);
         ChessGame.TeamColor teamColor = piece.getTeamColor();
         for (int[] direction : directions) {
             ChessPosition targetPosition = new ChessPosition(initialPosition.getRow(), initialPosition.getColumn());
             while (true) {
-                targetPosition = new ChessPosition(targetPosition.getRow() + direction[0], targetPosition.getColumn() + direction[1]);
+                targetPosition = new ChessPosition(targetPosition.getRow() + direction[0],
+                        targetPosition.getColumn() + direction[1]);
                 if (!board.isValidSquare(targetPosition)) {
                     break;
                 }
@@ -201,7 +217,8 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(initialPosition);
         ChessGame.TeamColor teamColor = piece.getTeamColor();
         for (int[] stepOffset : stepOffsets) {
-            ChessPosition targetPosition = new ChessPosition(initialPosition.getRow() + stepOffset[0], initialPosition.getColumn() + stepOffset[1]);
+            ChessPosition targetPosition = new ChessPosition(initialPosition.getRow() + stepOffset[0],
+                    initialPosition.getColumn() + stepOffset[1]);
             if (!board.isValidSquare(targetPosition)) {
                 continue;
             }

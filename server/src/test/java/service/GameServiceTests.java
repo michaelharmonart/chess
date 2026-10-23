@@ -70,7 +70,8 @@ class GameServiceTests {
     }
 
     @Test
-    void joinGameWhite() throws BadRequestException, DataAccessException, UnauthorizedException, GameService.InvalidGameException, GameService.TeamTakenException {
+    void joinGameWhite() throws BadRequestException, DataAccessException, UnauthorizedException,
+            GameService.InvalidGameException, GameService.TeamTakenException {
         var registerRequest = new UserService.RegisterRequest("username", "password", "email");
         var registerResponse = userService.register(registerRequest);
         var createGameRequest = new GameService.CreateGameRequest("game");
@@ -80,7 +81,8 @@ class GameServiceTests {
     }
 
     @Test
-    void joinGameBlack() throws BadRequestException, DataAccessException, UnauthorizedException, GameService.InvalidGameException, GameService.TeamTakenException {
+    void joinGameBlack() throws BadRequestException, DataAccessException, UnauthorizedException,
+            GameService.InvalidGameException, GameService.TeamTakenException {
         var registerRequest = new UserService.RegisterRequest("username", "password", "email");
         var registerResponse = userService.register(registerRequest);
         var createGameRequest = new GameService.CreateGameRequest("game");
@@ -118,7 +120,8 @@ class GameServiceTests {
     }
 
     @Test
-    void joinGameBlackTaken() throws BadRequestException, DataAccessException, UnauthorizedException, GameService.InvalidGameException, GameService.TeamTakenException {
+    void joinGameBlackTaken() throws BadRequestException, DataAccessException, UnauthorizedException,
+            GameService.InvalidGameException, GameService.TeamTakenException {
         var registerRequest = new UserService.RegisterRequest("username", "password", "email");
         var registerResponse = userService.register(registerRequest);
         var registerRequest2 = new UserService.RegisterRequest("username2", "password", "email");
@@ -131,7 +134,8 @@ class GameServiceTests {
     }
 
     @Test
-    void joinGameWhiteTaken() throws BadRequestException, DataAccessException, UnauthorizedException, GameService.InvalidGameException, GameService.TeamTakenException {
+    void joinGameWhiteTaken() throws BadRequestException, DataAccessException, UnauthorizedException,
+            GameService.InvalidGameException, GameService.TeamTakenException {
         var registerRequest = new UserService.RegisterRequest("username", "password", "email");
         var registerResponse = userService.register(registerRequest);
         var registerRequest2 = new UserService.RegisterRequest("username2", "password", "email");
