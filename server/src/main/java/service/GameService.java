@@ -3,11 +3,8 @@ package service;
 import chess.ChessGame;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
-import model.AuthData;
 import model.GameData;
-import model.UserData;
 
-import java.util.ArrayList;
 
 public class GameService {
     private final DataAccess dataAccess;
