@@ -30,7 +30,9 @@ public class Server {
         javalin.post("/user", this::handleRegister);
         javalin.post("/session", this::handleLogin);
         javalin.delete("/session", this::handleLogout);
+        javalin.get("/game", this::handleListGames);
         javalin.post("/game", this::handleCreateGame);
+        javalin.put("game", this::handleJoinGame);
         javalin.exception(Exception.class, this::handleException);
     }
 
@@ -53,9 +55,9 @@ public class Server {
         var registerRequest = serializer.fromJson(context.body(), UserService.RegisterRequest.class);
         try {
             var registerResponse = userService.register(registerRequest);
-            context.result(new Gson().toJson(registerResponse));
+            context.result(serializer.toJson(registerResponse));
         } catch (UsernameTakenException e) {
-            var body = new Gson().toJson(Map.of("message", "Error: already taken"));
+            var body = serializer.toJson(Map.of("message", "Error: already taken"));
             context.status(403);
             context.result(body);
         }
@@ -65,7 +67,7 @@ public class Server {
         var serializer = new Gson();
         var loginRequest = serializer.fromJson(context.body(), UserService.LoginRequest.class);
         var loginResponse = userService.login(loginRequest);
-        context.result(new Gson().toJson(loginResponse));
+        context.result(serializer.toJson(loginResponse));
     }
 
     private void handleLogout(Context context) throws DataAccessException, UnauthorizedException, BadRequestException {
@@ -74,27 +76,52 @@ public class Server {
         context.result("{}");
     }
 
+    private void handleListGames(Context context) throws DataAccessException, UnauthorizedException, BadRequestException {
+        var authToken = context.header("authorization");
+        var serializer = new Gson();
+        var listGamesResponse = gameService.listGames(authToken);
+        context.result(serializer.toJson(listGamesResponse));
+    }
+
     private void handleCreateGame(Context context) throws DataAccessException, UnauthorizedException, BadRequestException {
         var authToken = context.header("authorization");
         var serializer = new Gson();
         var createGameRequest = serializer.fromJson(context.body(), GameService.CreateGameRequest.class);
         var createGameResponse = gameService.createGame(createGameRequest, authToken);
-        context.result(new Gson().toJson(createGameResponse));
+        context.result(serializer.toJson(createGameResponse));
+    }
+
+    private void handleJoinGame(Context context) throws DataAccessException, UnauthorizedException, BadRequestException {
+        var authToken = context.header("authorization");
+        var serializer = new Gson();
+        var joinGameRequest = serializer.fromJson(context.body(), GameService.JoinGameRequest.class);
+        try {
+            gameService.joinGame(joinGameRequest, authToken);
+        } catch (GameService.InvalidGameException e) {
+            throw new BadRequestException(e.getMessage());
+        } catch (GameService.TeamTakenException e) {
+            var body = serializer.toJson(Map.of("message", "Error: already taken"));
+            context.status(403);
+            context.result(body);
+            return;
+        }
+        context.result("{}");
     }
 
     private void handleException(Exception e, Context context) {
+        var serializer = new Gson();
         if (e instanceof BadRequestException) {
-            var body = new Gson().toJson(Map.of("message", "Error: bad request"));
+            var body = serializer.toJson(Map.of("message", "Error: bad request"));
             context.status(400);
             context.result(body);
             return;
         } else if (e instanceof UnauthorizedException) {
-            var body = new Gson().toJson(Map.of("message", "Error: unauthorized"));
+            var body = serializer.toJson(Map.of("message", "Error: unauthorized"));
             context.status(401);
             context.result(body);
             return;
         }
-        var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+        var body = serializer.toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
         context.status(500);
         context.result(body);
 

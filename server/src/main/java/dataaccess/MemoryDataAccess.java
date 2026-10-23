@@ -49,9 +49,26 @@ public class MemoryDataAccess implements DataAccess {
         games.put(game.gameID(), game);
     }
 
+    public GameData getGame(int gameID) {
+        return games.get(gameID);
+    }
+
+    public void updateGame(int gameID, GameData gameData) throws DataAccessException {
+        if (!games.containsKey(gameID)) {
+            throw new DataAccessException("Invalid gameID");
+        }
+        games.put(gameID, gameData);
+    }
+
+    public GameData[] listGames() {
+        return games.values().toArray(new GameData[0]);
+    }
+
     public void clear() {
+        nextGameID = 1;
         users.clear();
         authTokens.clear();
+        games.clear();
     }
 
 }
