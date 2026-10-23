@@ -30,6 +30,7 @@ public class Server {
         javalin.delete("/db", this::handleClear);
         javalin.post("/user", this::handleRegister);
         javalin.post("/session", this::handleLogin);
+        javalin.delete("/session", this::handleLogout);
         javalin.exception(Exception.class, this::handleException);
     }
 
@@ -69,6 +70,12 @@ public class Server {
         var loginRequest = serializer.fromJson(context.body(), UserService.LoginRequest.class);
         var loginResponse = userService.login(loginRequest);
         context.result(new Gson().toJson(loginResponse));
+    }
+
+    private void handleLogout(Context context) throws DataAccessException, UnauthorizedException, BadRequestException {
+        var authToken = context.header("authorization");
+        userService.logout(authToken);
+        context.result("{}");
     }
 
     private void handleException(Exception e, Context context) {

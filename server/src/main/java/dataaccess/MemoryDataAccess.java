@@ -1,16 +1,15 @@
 package dataaccess;
 
+import model.AuthData;
 import model.UserData;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class MemoryDataAccess implements DataAccess {
     private final Map<String, UserData> users = new HashMap<>();
 
-    private final Set<String> authTokens = new HashSet<>();
+    private final Map<String, AuthData> authTokens = new HashMap<>();
 
     public void createUser(UserData user) throws UsernameTakenException {
         if (users.containsKey(user.username())) {
@@ -23,12 +22,16 @@ public class MemoryDataAccess implements DataAccess {
         return users.get(username);
     }
 
-    public void createAuthToken(String authToken) {
-        authTokens.add(authToken);
+    public void createAuth(AuthData authData) {
+        authTokens.put(authData.authToken(), authData);
     }
 
-    public boolean isValidAuthToken(String authToken) {
-        return authTokens.contains(authToken);
+    public AuthData getAuth(String authToken) {
+        return authTokens.get(authToken);
+    }
+
+    public void deleteAuth(String authToken) {
+        authTokens.remove(authToken);
     }
 
     public void clear() {

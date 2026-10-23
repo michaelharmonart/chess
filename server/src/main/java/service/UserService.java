@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
+import model.AuthData;
 import model.UserData;
 
 import java.util.Objects;
@@ -37,7 +38,9 @@ public class UserService {
         }
 
         dataAccess.createUser(new UserData(registerRequest.username, registerRequest.password, registerRequest.email));
-        return new RegisterResponse(registerRequest.username, generateAuthToken());
+        var authToken = generateAuthToken();
+        dataAccess.createAuth(new AuthData(authToken, registerRequest.username));
+        return new RegisterResponse(registerRequest.username, authToken);
     }
 
     public record LoginRequest(String username, String password) {
@@ -58,7 +61,18 @@ public class UserService {
             throw new InvalidLoginException("Incorrect password");
         }
         var authToken = generateAuthToken();
-        dataAccess.createAuthToken(authToken);
+        dataAccess.createAuth(new AuthData(authToken, user.username()));
         return new LoginResponse(user.username(), authToken);
+    }
+
+    public void logout(String authorization) throws DataAccessException, BadRequestException, UnauthorizedException {
+        if (authorization == null) {
+            throw new BadRequestException("All fields must be non null");
+        }
+        var authData = dataAccess.getAuth(authorization);
+        if (authData == null) {
+            throw new UnauthorizedException("Invalid authToken");
+        }
+        dataAccess.deleteAuth(authorization);
     }
 }
