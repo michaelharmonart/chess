@@ -8,5 +8,9 @@ public interface DataAccess {
 
     UserData getUser(String username) throws DataAccessException;
 
+    void createAuthToken(String authToken) throws DataAccessException;
+
+    boolean isValidAuthToken(String authToken) throws DataAccessException;
+
     void clear() throws DataAccessException;
 }

@@ -8,6 +8,8 @@ import dataaccess.UsernameTakenException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import service.AdminService;
+import service.BadRequestException;
+import service.UnauthorizedException;
 import service.UserService;
 
 import java.util.Map;
@@ -27,6 +29,7 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.delete("/db", this::handleClear);
         javalin.post("/user", this::handleRegister);
+        javalin.post("/session", this::handleLogin);
         javalin.exception(Exception.class, this::handleException);
     }
 
@@ -54,16 +57,35 @@ public class Server {
             var body = new Gson().toJson(Map.of("message", "Error: already taken"));
             context.status(403);
             context.result(body);
-        } catch (UserService.BadRequestException e) {
+        } catch (BadRequestException e) {
             var body = new Gson().toJson(Map.of("message", "Error: bad request"));
             context.status(400);
             context.result(body);
         }
     }
 
+    private void handleLogin(Context context) throws DataAccessException, UnauthorizedException, BadRequestException {
+        var serializer = new Gson();
+        var loginRequest = serializer.fromJson(context.body(), UserService.LoginRequest.class);
+        var loginResponse = userService.login(loginRequest);
+        context.result(new Gson().toJson(loginResponse));
+    }
+
     private void handleException(Exception e, Context context) {
+        if (e instanceof BadRequestException) {
+            var body = new Gson().toJson(Map.of("message", "Error: bad request"));
+            context.status(400);
+            context.result(body);
+            return;
+        } else if (e instanceof UnauthorizedException) {
+            var body = new Gson().toJson(Map.of("message", "Error: unauthorized"));
+            context.status(401);
+            context.result(body);
+            return;
+        }
         var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
         context.status(500);
         context.result(body);
+
     }
 }
