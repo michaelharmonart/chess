@@ -13,9 +13,9 @@ public class MemoryDataAccess implements DataAccess {
     private final Map<String, AuthData> authTokens = new HashMap<>();
     private final Map<Integer, GameData> games = new HashMap<>();
 
-    public void createUser(UserData user) throws UsernameTakenException {
+    public void createUser(UserData user) throws DataAccessException {
         if (users.containsKey(user.username())) {
-            throw new UsernameTakenException("Username already taken.");
+            throw new DataAccessException("Username already taken.");
         }
         users.put(user.username(), user);
     }

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
-import dataaccess.UsernameTakenException;
+import service.UsernameTakenException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import service.*;

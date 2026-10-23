@@ -36,7 +36,9 @@ public class UserService {
         if (registerRequest.username == null | registerRequest.password == null | registerRequest.password == null) {
             throw new BadRequestException("All fields must be non null");
         }
-
+        if (dataAccess.getUser(registerRequest.username()) != null) {
+            throw new UsernameTakenException("Username already taken.");
+        }
         dataAccess.createUser(new UserData(registerRequest.username, registerRequest.password, registerRequest.email));
         var authToken = generateAuthToken();
         dataAccess.createAuth(new AuthData(authToken, registerRequest.username));
